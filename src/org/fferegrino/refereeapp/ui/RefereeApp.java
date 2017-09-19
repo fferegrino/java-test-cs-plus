@@ -3,6 +3,9 @@ package org.fferegrino.refereeapp.ui;
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -18,6 +21,7 @@ import org.fferegrino.refereeapp.entities.AwardingBody;
 import org.fferegrino.refereeapp.entities.Referee;
 import org.fferegrino.refereeapp.entities.Match;
 import org.fferegrino.refereeapp.io.RefereeReader;
+import org.fferegrino.refereeapp.io.RefereeWriter;
 import org.fferegrino.refereeapp.ui.datamodels.*;
 
 import java.awt.GridBagLayout;
@@ -103,6 +107,12 @@ public class RefereeApp implements ActionListener {
 
 		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		frame.setVisible(true);
+		frame.addWindowListener(new java.awt.event.WindowAdapter() {
+		    @Override
+		    public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+		       saveReferees();
+		    }
+		});
 
 		refereesTableModel = new RefereesTableModel(referees);
 		refereesTable.setModel(refereesTableModel);
@@ -115,6 +125,17 @@ public class RefereeApp implements ActionListener {
 		refereeList.setModel(suitableRefereesListModel);
 		SuitableRefereesSelectionModel sm = new SuitableRefereesSelectionModel(refereeList,2);
 		refereeList.setSelectionModel(sm);
+	}
+	
+	private void saveReferees() {
+		try {
+			PrintWriter pw = new PrintWriter("RefereesOut.txt", "UTF-8");
+			RefereeWriter rw = new RefereeWriter();
+			rw.writeReferees(pw, referees);
+		} catch (FileNotFoundException | UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
