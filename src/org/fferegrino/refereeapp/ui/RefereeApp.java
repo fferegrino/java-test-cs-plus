@@ -23,6 +23,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.GridLayout;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextPane;
 import javax.swing.JButton;
 import javax.swing.JTextField;
@@ -67,6 +68,7 @@ public class RefereeApp implements ActionListener {
 	private JTextField textFirstName;
 	private JTextField textLastName;
 	private JTextField textMatches;
+	JLabel lblIdValue; 
 	
 	JButton btnSearch;
 	
@@ -191,14 +193,14 @@ public class RefereeApp implements ActionListener {
 		gbc_lblId.gridy = 0;
 		refereeDetails.add(lblId, gbc_lblId);
 
-		JLabel lblXx = new JLabel("---");
-		lblXx.setFont(new Font("Lucida Grande", Font.BOLD, 13));
+		lblIdValue = new JLabel("---");
+		lblIdValue.setFont(new Font("Lucida Grande", Font.BOLD, 13));
 		GridBagConstraints gbc_lblXx = new GridBagConstraints();
 		gbc_lblXx.anchor = GridBagConstraints.WEST;
 		gbc_lblXx.insets = new Insets(0, 0, 5, 0);
 		gbc_lblXx.gridx = 1;
 		gbc_lblXx.gridy = 0;
-		refereeDetails.add(lblXx, gbc_lblXx);
+		refereeDetails.add(lblIdValue, gbc_lblXx);
 
 		JLabel lblFirstName = new JLabel("First name:");
 		GridBagConstraints gbc_lblFirstName_1 = new GridBagConstraints();
@@ -360,9 +362,13 @@ public class RefereeApp implements ActionListener {
 			
 			if(coincidencia != null)
 			{
+				lblIdValue.setText(coincidencia.getId());
 				textFirstName.setText(coincidencia.getFirstName());
 				textLastName.setText(coincidencia.getLastName());
 				textMatches.setText(String.valueOf(coincidencia.getAllocatedMatches()));
+			}
+			else {
+				JOptionPane.showMessageDialog(frame, "Eggs are not supposed to be green.");
 			}
 		}
 		
