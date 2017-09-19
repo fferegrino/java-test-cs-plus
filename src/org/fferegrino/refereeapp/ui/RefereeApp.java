@@ -41,6 +41,8 @@ import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.JCheckBox;
 import javax.swing.JList;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 
 public class RefereeApp implements ActionListener {
 
@@ -97,6 +99,8 @@ public class RefereeApp implements ActionListener {
 	private JCheckBox chckbxSouth;
 	private JTable matchesTable;
 	private JTextField textWeek;
+	
+	JMenuItem mntmExit;
 
 	/**
 	 * Create the application.
@@ -125,6 +129,13 @@ public class RefereeApp implements ActionListener {
 		refereeList.setModel(suitableRefereesListModel);
 		SuitableRefereesSelectionModel sm = new SuitableRefereesSelectionModel(refereeList,2);
 		refereeList.setSelectionModel(sm);
+		
+		JMenuBar menuBar = new JMenuBar();
+		frame.setJMenuBar(menuBar);
+		
+		mntmExit = new JMenuItem("Exit");
+		menuBar.add(mntmExit);
+		mntmExit.addActionListener(this);
 	}
 	
 	private void saveReferees() {
@@ -578,6 +589,10 @@ public class RefereeApp implements ActionListener {
 			else {
 				JOptionPane.showMessageDialog(frame, "No suitable referees matched the selected criteria");
 			}
+		}
+		else if(e.getSource() == mntmExit) {
+			saveReferees();
+			System.exit(0);
 		}
 	}
 
