@@ -18,8 +18,8 @@ import org.fferegrino.refereeapp.entities.AwardingBody;
 import org.fferegrino.refereeapp.entities.Referee;
 import org.fferegrino.refereeapp.entities.Match;
 import org.fferegrino.refereeapp.io.RefereeReader;
-import org.fferegrino.refereeapp.ui.datamodels.MatchesTableModel;
-import org.fferegrino.refereeapp.ui.datamodels.RefereesTableModel;
+import org.fferegrino.refereeapp.ui.datamodels.*;
+
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
@@ -36,6 +36,7 @@ import javax.swing.JComboBox;
 import javax.swing.SwingConstants;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.JCheckBox;
+import javax.swing.JList;
 
 public class RefereeApp implements ActionListener {
 
@@ -68,7 +69,9 @@ public class RefereeApp implements ActionListener {
 	ArrayList<Match> matches ;
 	MatchesTableModel matchesTableModel;
 	RefereesTableModel refereesTableModel;
+	SuitableRefereesListModel suitableRefereesListModel;
 	private JTable refereesTable;
+	private JList refereeList;
 
 	private JTextPane firstNameSearchText;
 	private JTextPane lastNameSearchText;
@@ -107,6 +110,11 @@ public class RefereeApp implements ActionListener {
 		matches = new ArrayList<Match>();
 		matchesTableModel = new MatchesTableModel(matches);
 		matchesTable.setModel(matchesTableModel);
+		
+		suitableRefereesListModel = new SuitableRefereesListModel(referees);
+		refereeList.setModel(suitableRefereesListModel);
+		SuitableRefereesSelectionModel sm = new SuitableRefereesSelectionModel(refereeList,2);
+		refereeList.setSelectionModel(sm);
 	}
 
 	/**
@@ -371,9 +379,9 @@ public class RefereeApp implements ActionListener {
 		matchesPane.setRightComponent(matchesDetailsPanel);
 		GridBagLayout gbl_matchesDetailsPanel = new GridBagLayout();
 		gbl_matchesDetailsPanel.columnWidths = new int[]{0, 0, 0};
-		gbl_matchesDetailsPanel.rowHeights = new int[]{0, 0, 0, 0, 0};
+		gbl_matchesDetailsPanel.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0};
 		gbl_matchesDetailsPanel.columnWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
-		gbl_matchesDetailsPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_matchesDetailsPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		matchesDetailsPanel.setLayout(gbl_matchesDetailsPanel);
 		
 		JLabel lblWeek = new JLabel("Week:");
@@ -417,7 +425,8 @@ public class RefereeApp implements ActionListener {
 		gbc_lblLevel.gridy = 2;
 		matchesDetailsPanel.add(lblLevel, gbc_lblLevel);
 		
-		comboLevel = new JComboBox(AwardingBody.values());
+		String[] levels = {"Junior", "Senior"};
+		comboLevel = new JComboBox(levels);
 		GridBagConstraints gbc_comboLevel = new GridBagConstraints();
 		gbc_comboLevel.insets = new Insets(0, 0, 5, 0);
 		gbc_comboLevel.fill = GridBagConstraints.HORIZONTAL;
@@ -427,11 +436,25 @@ public class RefereeApp implements ActionListener {
 		
 		btnCreateMatch = new JButton("Create match");
 		btnCreateMatch.addActionListener(this);
+		
+		JLabel lblReferees = new JLabel("Referees:");
+		GridBagConstraints gbc_lblReferees = new GridBagConstraints();
+		gbc_lblReferees.insets = new Insets(0, 0, 5, 5);
+		gbc_lblReferees.gridx = 0;
+		gbc_lblReferees.gridy = 3;
+		matchesDetailsPanel.add(lblReferees, gbc_lblReferees);
+		
+		refereeList = new JList();
+		GridBagConstraints gbc_refereeList = new GridBagConstraints();
+		gbc_refereeList.insets = new Insets(0, 0, 5, 0);
+		gbc_refereeList.fill = GridBagConstraints.HORIZONTAL;
+		gbc_refereeList.gridx = 1;
+		gbc_refereeList.gridy = 3;
+		matchesDetailsPanel.add(refereeList, gbc_refereeList);
 		GridBagConstraints gbc_btnCreateMatch = new GridBagConstraints();
 		gbc_btnCreateMatch.gridwidth = 2;
-		gbc_btnCreateMatch.insets = new Insets(0, 0, 0, 5);
 		gbc_btnCreateMatch.gridx = 0;
-		gbc_btnCreateMatch.gridy = 3;
+		gbc_btnCreateMatch.gridy = 4;
 		matchesDetailsPanel.add(btnCreateMatch, gbc_btnCreateMatch);
 		
 	}
@@ -490,12 +513,17 @@ public class RefereeApp implements ActionListener {
 		{
 			Match m = new Match();
 			m.area = (Area)comboArea.getSelectedItem();
-			m.qualification ="Junior";
+			m.level =(String)comboLevel.getSelectedItem();
 			m.week = Integer.parseInt(textWeek.getText());
-			m.referee1 = referees.get(0);
-			m.referee2 = referees.get(1);
-			matches.add(m);
-			matchesTableModel.fireTableRowsInserted(0, matches.size());
+			
+			int[] selectedReferees = refereeList.getSelectedIndices();
+			if(selectedReferees.length == 2)
+			{
+				m.referee1 = referees.get(selectedReferees[0]);
+				m.referee2 = referees.get(selectedReferees[1]);	
+				matches.add(m);
+				matchesTableModel.fireTableRowsInserted(0, matches.size());
+			}
 		}
 	}
 

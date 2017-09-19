@@ -55,7 +55,7 @@ public class MatchesTableModel extends AbstractTableModel {
 		case 0: // ID
 			return String.valueOf(m.week);
 		case 1:
-			return m.qualification;
+			return m.level;
 		case 2:
 			return m.area.name();
 		case 3: 
