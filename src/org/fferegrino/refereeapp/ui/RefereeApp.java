@@ -13,6 +13,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 
+import org.fferegrino.refereeapp.entities.Area;
 import org.fferegrino.refereeapp.entities.Referee;
 import org.fferegrino.refereeapp.io.RefereeReader;
 import org.fferegrino.refereeapp.ui.datamodels.RefereesTableModel;
@@ -244,7 +245,9 @@ public class RefereeApp implements ActionListener {
 		gbc_lblQualification.gridy = 3;
 		refereeDetails.add(lblQualification, gbc_lblQualification);
 
-		comboQualification = new JComboBox();
+		String[] qualifications = {"NJB1", "IJB1", "NJB2", "IJB2", "NJB3", "IJB3", "NJB4", "IJB4"};
+		
+		comboQualification = new JComboBox<String>(qualifications);
 		GridBagConstraints gbc_comboBox = new GridBagConstraints();
 		gbc_comboBox.insets = new Insets(0, 0, 5, 0);
 		gbc_comboBox.fill = GridBagConstraints.HORIZONTAL;
@@ -278,7 +281,7 @@ public class RefereeApp implements ActionListener {
 		gbc_lblHome.gridy = 5;
 		refereeDetails.add(lblHome, gbc_lblHome);
 
-		comboHome = new JComboBox();
+		comboHome = new JComboBox(Area.values());
 		GridBagConstraints gbc_comboBox_1 = new GridBagConstraints();
 		gbc_comboBox_1.insets = new Insets(0, 0, 5, 0);
 		gbc_comboBox_1.fill = GridBagConstraints.HORIZONTAL;
@@ -366,9 +369,27 @@ public class RefereeApp implements ActionListener {
 				textFirstName.setText(coincidencia.getFirstName());
 				textLastName.setText(coincidencia.getLastName());
 				textMatches.setText(String.valueOf(coincidencia.getAllocatedMatches()));
+				comboQualification.setSelectedItem(coincidencia.getQualification());
+				comboHome.setSelectedItem(coincidencia.getHome());
+				
+
+					chckbxNorth.setEnabled(true);
+					chckbxCenter.setEnabled(true);
+					chckbxSouth.setEnabled(true);
+
+				if(coincidencia.getHome() == Area.NORTH)
+					chckbxNorth.setEnabled(false);
+				if(coincidencia.getHome() == Area.CENTRAL)
+					chckbxCenter.setEnabled(false);
+				if(coincidencia.getHome() == Area.SOUTH)
+					chckbxSouth.setEnabled(false);
+
+				chckbxNorth.setSelected(coincidencia.willingToTravelTo(Area.NORTH));
+				chckbxCenter.setSelected(coincidencia.willingToTravelTo(Area.CENTRAL));
+				chckbxSouth.setSelected(coincidencia.willingToTravelTo(Area.SOUTH));
 			}
 			else {
-				JOptionPane.showMessageDialog(frame, "Eggs are not supposed to be green.");
+				JOptionPane.showMessageDialog(frame, "Referee not found");
 			}
 		}
 		

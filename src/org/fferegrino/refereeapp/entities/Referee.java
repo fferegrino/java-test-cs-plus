@@ -13,6 +13,11 @@ public class Referee {
 	private String localities;
 	private int allocatedMatches;
 	public ArrayList<Match> newMatches;
+	
+	public boolean willingToTravelTo(Area area) {
+		int loc = area == Area.NORTH ? 0 : area == Area.CENTRAL ? 1 : 2;
+		return localities.charAt(loc) == 'Y';
+	}
 
 	@Override
 	public String toString() {
