@@ -80,7 +80,6 @@ public class RefereeApp {
 		refereesPanel.setRightComponent(panel);
 
 		refereesTable = new JTable();
-		tabbedPane.addTab("New tab", null, refereesTable, null);
 
 		JScrollPane refereesScrollPanel = new JScrollPane(refereesTable);
 		refereesPanel.setLeftComponent(refereesScrollPanel);
