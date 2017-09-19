@@ -20,6 +20,7 @@ import org.fferegrino.refereeapp.entities.Area;
 import org.fferegrino.refereeapp.entities.AwardingBody;
 import org.fferegrino.refereeapp.entities.Referee;
 import org.fferegrino.refereeapp.entities.Match;
+import org.fferegrino.refereeapp.io.MatchesWriter;
 import org.fferegrino.refereeapp.io.RefereeReader;
 import org.fferegrino.refereeapp.io.RefereeWriter;
 import org.fferegrino.refereeapp.ui.datamodels.*;
@@ -114,7 +115,8 @@ public class RefereeApp implements ActionListener {
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
 		    @Override
 		    public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-		       saveReferees();
+				saveReferees();
+				saveMatches();
 		    }
 		});
 
@@ -143,6 +145,16 @@ public class RefereeApp implements ActionListener {
 			PrintWriter pw = new PrintWriter("RefereesOut.txt", "UTF-8");
 			RefereeWriter rw = new RefereeWriter();
 			rw.writeReferees(pw, referees);
+		} catch (FileNotFoundException | UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void saveMatches() {
+		try {
+			PrintWriter pw = new PrintWriter("MatchAllocs.txt", "UTF-8");
+			MatchesWriter mw = new MatchesWriter();
+			mw.writeMatches(pw, matches);
 		} catch (FileNotFoundException | UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -588,6 +600,7 @@ public class RefereeApp implements ActionListener {
 		}
 		else if(e.getSource() == mntmExit) {
 			saveReferees();
+			saveMatches();
 			System.exit(0);
 		}
 	}
