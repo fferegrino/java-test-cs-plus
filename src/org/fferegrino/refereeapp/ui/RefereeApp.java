@@ -44,6 +44,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JList;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import java.awt.Color;
 
 public class RefereeApp implements ActionListener {
 
@@ -73,7 +74,7 @@ public class RefereeApp implements ActionListener {
 	}
 
 	ArrayList<Referee> referees;
-	ArrayList<Match> matches ;
+	ArrayList<Match> matches;
 	MatchesTableModel matchesTableModel;
 	RefereesTableModel refereesTableModel;
 	SuitableRefereesListModel suitableRefereesListModel;
@@ -82,17 +83,20 @@ public class RefereeApp implements ActionListener {
 
 	private JTextPane firstNameSearchText;
 	private JTextPane lastNameSearchText;
-	
+
 	private JTextField textFirstName;
 	private JTextField textLastName;
 	private JTextField textMatches;
-	JLabel lblIdValue; 
-	
+	JLabel lblIdValue;
+
 	JButton btnSearch;
 	JButton btnCreateMatch;
-	
+	JButton btnClear;
+	JButton btnSave;
+	JButton btnDelete;
+
 	private JComboBox comboQualification;
-	private JComboBox comboHome;
+	private JComboBox comboHomeReferee;
 	private JComboBox comboAreaAddMatch;
 	private JComboBox comboLevelAddMatch;
 	private JCheckBox chckbxNorth;
@@ -100,7 +104,7 @@ public class RefereeApp implements ActionListener {
 	private JCheckBox chckbxSouth;
 	private JTable matchesTable;
 	private JTextField textWeek;
-	
+
 	JMenuItem mntmExit;
 
 	/**
@@ -113,33 +117,33 @@ public class RefereeApp implements ActionListener {
 		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		frame.setVisible(true);
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
-		    @Override
-		    public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+			@Override
+			public void windowClosing(java.awt.event.WindowEvent windowEvent) {
 				saveReferees();
 				saveMatches();
-		    }
+			}
 		});
 
 		refereesTableModel = new RefereesTableModel(referees);
 		refereesTable.setModel(refereesTableModel);
-		
+
 		matches = new ArrayList<Match>();
 		matchesTableModel = new MatchesTableModel(matches);
 		matchesTable.setModel(matchesTableModel);
-		
+
 		suitableRefereesListModel = new SuitableRefereesListModel(referees);
 		refereeList.setModel(suitableRefereesListModel);
-		SuitableRefereesSelectionModel sm = new SuitableRefereesSelectionModel(refereeList,2);
+		SuitableRefereesSelectionModel sm = new SuitableRefereesSelectionModel(refereeList, 2);
 		refereeList.setSelectionModel(sm);
-		
+
 		JMenuBar menuBar = new JMenuBar();
 		frame.setJMenuBar(menuBar);
-		
+
 		mntmExit = new JMenuItem("Exit");
 		menuBar.add(mntmExit);
 		mntmExit.addActionListener(this);
 	}
-	
+
 	private void saveReferees() {
 		try {
 			PrintWriter pw = new PrintWriter("RefereesOut.txt", "UTF-8");
@@ -149,7 +153,7 @@ public class RefereeApp implements ActionListener {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void saveMatches() {
 		try {
 			PrintWriter pw = new PrintWriter("MatchAllocs.txt", "UTF-8");
@@ -224,7 +228,7 @@ public class RefereeApp implements ActionListener {
 		gbc_firstNameTextPane.gridy = 1;
 		searchRefereePanel.add(firstNameSearchText, gbc_firstNameTextPane);
 
-		lastNameSearchText= new JTextPane();
+		lastNameSearchText = new JTextPane();
 		GridBagConstraints gbc_lastNameTextPane = new GridBagConstraints();
 		gbc_lastNameTextPane.insets = new Insets(0, 0, 5, 0);
 		gbc_lastNameTextPane.fill = GridBagConstraints.HORIZONTAL;
@@ -313,8 +317,8 @@ public class RefereeApp implements ActionListener {
 		gbc_lblQualification.gridy = 3;
 		refereeDetails.add(lblQualification, gbc_lblQualification);
 
-		String[] qualifications = {"NJB1", "IJB1", "NJB2", "IJB2", "NJB3", "IJB3", "NJB4", "IJB4"};
-		
+		String[] qualifications = { "NJB1", "IJB1", "NJB2", "IJB2", "NJB3", "IJB3", "NJB4", "IJB4" };
+
 		comboQualification = new JComboBox(qualifications);
 		GridBagConstraints gbc_comboQualification = new GridBagConstraints();
 		gbc_comboQualification.insets = new Insets(0, 0, 5, 0);
@@ -349,13 +353,14 @@ public class RefereeApp implements ActionListener {
 		gbc_lblHome.gridy = 5;
 		refereeDetails.add(lblHome, gbc_lblHome);
 
-		comboHome = new JComboBox(Area.values());
+		comboHomeReferee = new JComboBox(Area.values());
+		comboHomeReferee.addActionListener(this);
 		GridBagConstraints gbc_comboBox_1 = new GridBagConstraints();
 		gbc_comboBox_1.insets = new Insets(0, 0, 5, 0);
 		gbc_comboBox_1.fill = GridBagConstraints.HORIZONTAL;
 		gbc_comboBox_1.gridx = 1;
 		gbc_comboBox_1.gridy = 5;
-		refereeDetails.add(comboHome, gbc_comboBox_1);
+		refereeDetails.add(comboHomeReferee, gbc_comboBox_1);
 
 		JLabel lblWillingToVisit = new JLabel("Willing to visit:");
 		GridBagConstraints gbc_lblWillingToVisit = new GridBagConstraints();
@@ -382,52 +387,68 @@ public class RefereeApp implements ActionListener {
 		chckbxSouth = new JCheckBox("South");
 		checksPanel.add(chckbxSouth);
 
-		JButton btnSave = new JButton("Save");
+		btnClear = new JButton("Clear");
+		btnClear.addActionListener(this);
+		GridBagConstraints gbc_btnClear = new GridBagConstraints();
+		gbc_btnClear.fill = GridBagConstraints.HORIZONTAL;
+		gbc_btnClear.gridwidth = 2;
+		gbc_btnClear.insets = new Insets(0, 0, 5, 5);
+		gbc_btnClear.gridx = 0;
+		gbc_btnClear.gridy = 7;
+		refereeDetails.add(btnClear, gbc_btnClear);
+
+		btnSave = new JButton("Save");
+		btnSave.addActionListener(this);
 		GridBagConstraints gbc_btnSave = new GridBagConstraints();
+		gbc_btnSave.fill = GridBagConstraints.HORIZONTAL;
 		gbc_btnSave.gridwidth = 2;
 		gbc_btnSave.insets = new Insets(0, 0, 5, 0);
 		gbc_btnSave.gridx = 0;
 		gbc_btnSave.gridy = 8;
 		refereeDetails.add(btnSave, gbc_btnSave);
 
-		JButton btnDelete = new JButton("Delete");
+		btnDelete = new JButton("Delete");
+		btnDelete.setForeground(Color.RED);
+		btnDelete.addActionListener(this);
 		GridBagConstraints gbc_btnDelete = new GridBagConstraints();
+		gbc_btnDelete.fill = GridBagConstraints.HORIZONTAL;
 		gbc_btnDelete.gridwidth = 2;
 		gbc_btnDelete.insets = new Insets(0, 0, 5, 0);
 		gbc_btnDelete.gridx = 0;
-		gbc_btnDelete.gridy = 9;
+		gbc_btnDelete.gridy = 10;
 		refereeDetails.add(btnDelete, gbc_btnDelete);
 
 		JButton btnNew = new JButton("New");
 		GridBagConstraints gbc_btnNew = new GridBagConstraints();
+		gbc_btnNew.fill = GridBagConstraints.HORIZONTAL;
 		gbc_btnNew.gridwidth = 2;
 		gbc_btnNew.insets = new Insets(0, 0, 5, 0);
 		gbc_btnNew.gridx = 0;
-		gbc_btnNew.gridy = 10;
+		gbc_btnNew.gridy = 9;
 		refereeDetails.add(btnNew, gbc_btnNew);
 
 		refereesTable = new JTable();
 
 		JScrollPane refereesScrollPanel = new JScrollPane(refereesTable);
 		refereesPanel.setLeftComponent(refereesScrollPanel);
-		
+
 		JSplitPane matchesPane = new JSplitPane();
 		tabbedPane.addTab("Matches", null, matchesPane, null);
-		
+
 		matchesTable = new JTable();
-		
+
 		JScrollPane matchesScrollPanel = new JScrollPane(matchesTable);
 		matchesPane.setLeftComponent(matchesScrollPanel);
-		
+
 		JPanel matchesDetailsPanel = new JPanel();
 		matchesPane.setRightComponent(matchesDetailsPanel);
 		GridBagLayout gbl_matchesDetailsPanel = new GridBagLayout();
-		gbl_matchesDetailsPanel.columnWidths = new int[]{0, 0, 0};
-		gbl_matchesDetailsPanel.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0};
-		gbl_matchesDetailsPanel.columnWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
-		gbl_matchesDetailsPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_matchesDetailsPanel.columnWidths = new int[] { 0, 0, 0 };
+		gbl_matchesDetailsPanel.rowHeights = new int[] { 0, 0, 0, 0, 0, 0, 0 };
+		gbl_matchesDetailsPanel.columnWeights = new double[] { 0.0, 1.0, Double.MIN_VALUE };
+		gbl_matchesDetailsPanel.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE };
 		matchesDetailsPanel.setLayout(gbl_matchesDetailsPanel);
-		
+
 		JLabel lblWeek = new JLabel("Week:");
 		GridBagConstraints gbc_lblWeek = new GridBagConstraints();
 		gbc_lblWeek.insets = new Insets(0, 0, 5, 5);
@@ -435,7 +456,7 @@ public class RefereeApp implements ActionListener {
 		gbc_lblWeek.gridx = 0;
 		gbc_lblWeek.gridy = 0;
 		matchesDetailsPanel.add(lblWeek, gbc_lblWeek);
-		
+
 		textWeek = new JTextField();
 		GridBagConstraints gbc_textWeek = new GridBagConstraints();
 		gbc_textWeek.insets = new Insets(0, 0, 5, 0);
@@ -444,7 +465,7 @@ public class RefereeApp implements ActionListener {
 		gbc_textWeek.gridy = 0;
 		matchesDetailsPanel.add(textWeek, gbc_textWeek);
 		textWeek.setColumns(10);
-		
+
 		JLabel lblArea = new JLabel("Area:");
 		GridBagConstraints gbc_lblArea = new GridBagConstraints();
 		gbc_lblArea.anchor = GridBagConstraints.EAST;
@@ -452,7 +473,7 @@ public class RefereeApp implements ActionListener {
 		gbc_lblArea.gridx = 0;
 		gbc_lblArea.gridy = 1;
 		matchesDetailsPanel.add(lblArea, gbc_lblArea);
-		
+
 		comboAreaAddMatch = new JComboBox(Area.values());
 		comboAreaAddMatch.addActionListener(this);
 		GridBagConstraints gbc_comboArea = new GridBagConstraints();
@@ -461,7 +482,7 @@ public class RefereeApp implements ActionListener {
 		gbc_comboArea.gridx = 1;
 		gbc_comboArea.gridy = 1;
 		matchesDetailsPanel.add(comboAreaAddMatch, gbc_comboArea);
-		
+
 		JLabel lblLevel = new JLabel("Level:");
 		GridBagConstraints gbc_lblLevel = new GridBagConstraints();
 		gbc_lblLevel.anchor = GridBagConstraints.EAST;
@@ -469,7 +490,7 @@ public class RefereeApp implements ActionListener {
 		gbc_lblLevel.gridx = 0;
 		gbc_lblLevel.gridy = 2;
 		matchesDetailsPanel.add(lblLevel, gbc_lblLevel);
-		
+
 		comboLevelAddMatch = new JComboBox(Match.LEVELS);
 		comboLevelAddMatch.addActionListener(this);
 		GridBagConstraints gbc_comboLevel = new GridBagConstraints();
@@ -478,17 +499,17 @@ public class RefereeApp implements ActionListener {
 		gbc_comboLevel.gridx = 1;
 		gbc_comboLevel.gridy = 2;
 		matchesDetailsPanel.add(comboLevelAddMatch, gbc_comboLevel);
-		
+
 		btnCreateMatch = new JButton("Create match");
 		btnCreateMatch.addActionListener(this);
-		
+
 		JLabel lblReferees = new JLabel("Referees:");
 		GridBagConstraints gbc_lblReferees = new GridBagConstraints();
 		gbc_lblReferees.insets = new Insets(0, 0, 5, 5);
 		gbc_lblReferees.gridx = 0;
 		gbc_lblReferees.gridy = 3;
 		matchesDetailsPanel.add(lblReferees, gbc_lblReferees);
-		
+
 		refereeList = new JList();
 		GridBagConstraints gbc_refereeList = new GridBagConstraints();
 		gbc_refereeList.insets = new Insets(0, 0, 5, 0);
@@ -501,108 +522,187 @@ public class RefereeApp implements ActionListener {
 		gbc_btnCreateMatch.gridx = 0;
 		gbc_btnCreateMatch.gridy = 4;
 		matchesDetailsPanel.add(btnCreateMatch, gbc_btnCreateMatch);
-		
+
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if(e.getSource() == btnSearch) // Búsqueda
+		if (e.getSource() == btnSearch) // Búsqueda
 		{
 			String firstNameToSearch = firstNameSearchText.getText();
 			String lastNameToSearch = lastNameSearchText.getText();
-			
+
 			Referee coincidencia = null;
-			for(int i = 0; i < referees.size(); i++)
-			{
-				if(referees.get(i).getFirstName().equals(firstNameToSearch) &&
-						referees.get(i).getLastName().equals(lastNameToSearch) )
-				{
+			for (int i = 0; i < referees.size(); i++) {
+				if (referees.get(i).getFirstName().equals(firstNameToSearch)
+						&& referees.get(i).getLastName().equals(lastNameToSearch)) {
 					coincidencia = referees.get(i);
 					break;
 				}
 			}
-			
-			if(coincidencia != null)
-			{
+
+			if (coincidencia != null) {
 				lblIdValue.setText(coincidencia.getId());
 				textFirstName.setText(coincidencia.getFirstName());
 				textLastName.setText(coincidencia.getLastName());
+
 				textMatches.setText(String.valueOf(coincidencia.getAllocatedMatches()));
 				comboQualification.setSelectedItem(coincidencia.getQualification());
-				comboHome.setSelectedItem(coincidencia.getHome());
+				comboHomeReferee.setSelectedItem(coincidencia.getHome());
 
 				chckbxNorth.setSelected(coincidencia.willingToTravelTo(Area.NORTH));
 				chckbxCenter.setSelected(coincidencia.willingToTravelTo(Area.CENTRAL));
 				chckbxSouth.setSelected(coincidencia.willingToTravelTo(Area.SOUTH));
-				
+
 				chckbxNorth.setEnabled(true);
 				chckbxCenter.setEnabled(true);
 				chckbxSouth.setEnabled(true);
 
-				if(coincidencia.getHome() == Area.NORTH)
+				if (coincidencia.getHome() == Area.NORTH)
 					chckbxNorth.setEnabled(false);
-				if(coincidencia.getHome() == Area.CENTRAL)
+				if (coincidencia.getHome() == Area.CENTRAL)
 					chckbxCenter.setEnabled(false);
-				if(coincidencia.getHome() == Area.SOUTH)
+				if (coincidencia.getHome() == Area.SOUTH)
 					chckbxSouth.setEnabled(false);
-			}
-			else {
+
+				textFirstName.setEnabled(false);
+				textLastName.setEnabled(false);
+				textMatches.setEnabled(false);
+			} else {
 				JOptionPane.showMessageDialog(frame, "Referee not found");
 			}
-		}
-		else if(e.getSource() == btnCreateMatch) 
-		{
+		} else if (e.getSource() == btnClear) {
+			lblIdValue.setText("---");
+
+			textFirstName.setText("");
+			textLastName.setText("");
+			textMatches.setText("");
+
+			chckbxNorth.setEnabled(true);
+			chckbxCenter.setEnabled(true);
+			chckbxSouth.setEnabled(true);
+
+			chckbxNorth.setSelected(false);
+			chckbxCenter.setSelected(false);
+			chckbxSouth.setSelected(false);
+
+			textFirstName.setEnabled(true);
+			textLastName.setEnabled(true);
+			textMatches.setEnabled(true);
+
+		} else if (e.getSource() == btnSave) {
+
+			String id = lblIdValue.getText();
+			Referee ref = null;
+			int r = -1;
+			for (int i = 0; i < referees.size(); i++) {
+				ref = referees.get(i);
+				if (ref.getId().equals(id)) {
+					r = i;
+					break;
+				}
+			}
+
+			if (r >= 0) {
+				String qualification = (String) comboQualification.getSelectedItem();
+				Area home = (Area) comboHomeReferee.getSelectedItem();
+
+				String north = chckbxNorth.isSelected() ? "Y" : "N";
+				String center = chckbxCenter.isSelected() ? "Y" : "N";
+				String south = chckbxSouth.isSelected() ? "Y" : "N";
+
+				String awardingBody = qualification.substring(0, 3);
+
+				if (awardingBody.equals("NJB"))
+					ref.setQualificationAwardingBody(AwardingBody.NJB);
+				else if (awardingBody.equals("IJB"))
+					ref.setQualificationAwardingBody(AwardingBody.IJB);
+				ref.setQualificationLevel(qualification.charAt(3) - '0');
+				
+				ref.setLocalities(north + south + center);
+				ref.setHome(home);
+				refereesTableModel.fireTableDataChanged();
+			}
+		} else if (e.getSource() == btnCreateMatch) {
 			String error = "";
 			Match m = new Match();
-			m.area = (Area)comboAreaAddMatch.getSelectedItem();
-			m.level =(String)comboLevelAddMatch.getSelectedItem();
+			m.area = (Area) comboAreaAddMatch.getSelectedItem();
+			m.level = (String) comboLevelAddMatch.getSelectedItem();
 
 			try {
 				m.week = Integer.parseInt(textWeek.getText());
-			}
-			catch(Exception ex)
-			{
+			} catch (Exception ex) {
 				error += "You must set a valid week\n";
 			}
-			
-			
-			int[] selectedReferees = refereeList.getSelectedIndices();
-			if(selectedReferees.length == 2)
-			{
-				m.referee1 = suitableRefereesListModel.getSuitableReferees()[selectedReferees[0]];
-				m.referee2 = suitableRefereesListModel.getSuitableReferees()[selectedReferees[1]];	
 
-				m.referee1.setAllocatedMatches(m.referee1.getAllocatedMatches() +1);
-				m.referee2.setAllocatedMatches(m.referee2.getAllocatedMatches() +1);
+			int[] selectedReferees = refereeList.getSelectedIndices();
+			if (selectedReferees.length == 2) {
+				m.referee1 = suitableRefereesListModel.getSuitableReferees()[selectedReferees[0]];
+				m.referee2 = suitableRefereesListModel.getSuitableReferees()[selectedReferees[1]];
+
+				m.referee1.setAllocatedMatches(m.referee1.getAllocatedMatches() + 1);
+				m.referee2.setAllocatedMatches(m.referee2.getAllocatedMatches() + 1);
+
 				refereesTableModel.fireTableDataChanged();
-			}
-			else 
-			{
+			} else {
 				error += "You must select 2 referees\n";
 			}
-			
-			if(error.equals("")) {
+
+			if (error.equals("")) {
 				matches.add(m);
 				matchesTableModel.fireTableRowsInserted(0, matches.size());
-			}
-			else {
+			} else {
 				JOptionPane.showMessageDialog(frame, error);
 			}
-		}
-		else if(e.getSource() == comboAreaAddMatch || e.getSource() == comboLevelAddMatch) 
-		{
-			suitableRefereesListModel.setConditions((String)comboLevelAddMatch.getSelectedItem(), 
-					(Area)comboAreaAddMatch.getSelectedItem());
-			
-			if(suitableRefereesListModel.getSize() >= 2) {
-				int [] indices = {0,1};
-				refereeList.setSelectedIndices(indices);
+
+		} else if (e.getSource() == btnDelete) {
+			String id = lblIdValue.getText();
+			Referee ref = null;
+			int r = -1;
+			for (int i = 0; i < referees.size(); i++) {
+				ref = referees.get(i);
+				if (ref.getId().equals(id)) {
+					r = i;
+					break;
+				}
 			}
-			else {
+			if (r >= 0) {
+				referees.remove(r);
+				refereesTableModel.fireTableRowsDeleted(0, referees.size());
+			}
+		} else if (e.getSource() == comboAreaAddMatch || e.getSource() == comboLevelAddMatch) {
+			suitableRefereesListModel.setConditions((String) comboLevelAddMatch.getSelectedItem(),
+					(Area) comboAreaAddMatch.getSelectedItem());
+
+			if (suitableRefereesListModel.getSize() >= 2) {
+				int[] indices = { 0, 1 };
+				refereeList.setSelectedIndices(indices);
+			} else {
 				JOptionPane.showMessageDialog(frame, "No suitable referees matched the selected criteria");
 			}
-		}
-		else if(e.getSource() == mntmExit) {
+		} else if (e.getSource() == mntmExit) {
+			saveReferees();
+			saveMatches();
+			System.exit(0);
+		} else if (e.getSource() == comboHomeReferee) {
+
+			Area selected = (Area) comboHomeReferee.getSelectedItem();
+			 
+			chckbxNorth.setEnabled(true);
+			chckbxCenter.setEnabled(true);
+			chckbxSouth.setEnabled(true);
+
+			if (selected == Area.NORTH) {
+				chckbxNorth.setEnabled(false);
+				chckbxNorth.setSelected(true);
+			}else  if (selected == Area.CENTRAL) {
+				chckbxCenter.setEnabled(false);
+				chckbxCenter.setSelected(true);
+			} else if (selected == Area.SOUTH) { 
+				chckbxSouth.setEnabled(false);
+				chckbxSouth.setSelected(true);
+			}
+		} else if (e.getSource() == mntmExit) {
 			saveReferees();
 			saveMatches();
 			System.exit(0);
