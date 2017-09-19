@@ -19,6 +19,8 @@ import org.fferegrino.refereeapp.ui.datamodels.RefereesTableModel;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.GridLayout;
 import javax.swing.JLabel;
 import javax.swing.JTextPane;
@@ -29,7 +31,7 @@ import javax.swing.JComboBox;
 import javax.swing.SwingConstants;
 import javax.swing.JCheckBox;
 
-public class RefereeApp {
+public class RefereeApp implements ActionListener {
 
 	private JFrame frame;
 
@@ -58,9 +60,16 @@ public class RefereeApp {
 
 	ArrayList<Referee> referees;
 	private JTable refereesTable;
+
+	private JTextPane firstNameSearchText;
+	private JTextPane lastNameSearchText;
+	
 	private JTextField textFirstName;
 	private JTextField textLastName;
 	private JTextField textMatches;
+	
+	JButton btnSearch;
+	
 	private JComboBox comboQualification;
 	private JComboBox comboHome;
 	private JCheckBox chckbxNorth;
@@ -135,23 +144,25 @@ public class RefereeApp {
 		gbc_lblLastName.gridy = 0;
 		searchRefereePanel.add(lblLastNameSearch, gbc_lblLastName);
 
-		JTextPane firstNameTextPane = new JTextPane();
+		firstNameSearchText = new JTextPane();
 		GridBagConstraints gbc_firstNameTextPane = new GridBagConstraints();
+		gbc_firstNameTextPane.insets = new Insets(0, 0, 5, 0);
 		gbc_firstNameTextPane.fill = GridBagConstraints.HORIZONTAL;
 		gbc_firstNameTextPane.insets = new Insets(0, 0, 5, 5);
 		gbc_firstNameTextPane.gridx = 0;
 		gbc_firstNameTextPane.gridy = 1;
-		searchRefereePanel.add(firstNameTextPane, gbc_firstNameTextPane);
+		searchRefereePanel.add(firstNameSearchText, gbc_firstNameTextPane);
 
-		JTextPane lastNameTextPane = new JTextPane();
+		lastNameSearchText= new JTextPane();
 		GridBagConstraints gbc_lastNameTextPane = new GridBagConstraints();
-		gbc_lastNameTextPane.insets = new Insets(0, 0, 5, 5);
+		gbc_lastNameTextPane.insets = new Insets(0, 0, 5, 0);
 		gbc_lastNameTextPane.fill = GridBagConstraints.HORIZONTAL;
 		gbc_lastNameTextPane.gridx = 1;
 		gbc_lastNameTextPane.gridy = 1;
-		searchRefereePanel.add(lastNameTextPane, gbc_lastNameTextPane);
+		searchRefereePanel.add(lastNameSearchText, gbc_lastNameTextPane);
 
-		JButton btnSearch = new JButton("Search");
+		btnSearch = new JButton("Search");
+		btnSearch.addActionListener(this);
 		GridBagConstraints gbc_btnSearch = new GridBagConstraints();
 		gbc_btnSearch.insets = new Insets(0, 0, 5, 0);
 		gbc_btnSearch.fill = GridBagConstraints.HORIZONTAL;
@@ -327,6 +338,34 @@ public class RefereeApp {
 
 	protected JTable getRefereesTable() {
 		return refereesTable;
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if(e.getSource() == btnSearch) // Búsqueda
+		{
+			String firstNameToSearch = firstNameSearchText.getText();
+			String lastNameToSearch = lastNameSearchText.getText();
+			
+			Referee coincidencia = null;
+			for(int i = 0; i < referees.size(); i++)
+			{
+				if(referees.get(i).getFirstName().equals(firstNameToSearch) &&
+						referees.get(i).getLastName().equals(lastNameToSearch) )
+				{
+					coincidencia = referees.get(i);
+					break;
+				}
+			}
+			
+			if(coincidencia != null)
+			{
+				textFirstName.setText(coincidencia.getFirstName());
+				textLastName.setText(coincidencia.getLastName());
+				textMatches.setText(String.valueOf(coincidencia.getAllocatedMatches()));
+			}
+		}
+		
 	}
 
 }
