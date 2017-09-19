@@ -12,28 +12,28 @@ public class RefereeReader {
 			String read = s.nextLine();
 			String[] fields = read.split("\\s");
 			Referee r = new Referee();
-			r.firstName = fields[1];
-			r.lastName = fields[2];
-			r.sequenceNumber = fields[0].charAt(2) - '0';
-			r.qualificationLevel = fields[3].charAt(3) - '0';
+			r.setFirstName(fields[1]);
+			r.setLastName(fields[2]);
+			r.setSequenceNumber(fields[0].charAt(2) - '0');
+			r.setQualificationLevel(fields[3].charAt(3) - '0');
 			String awardingBody = fields[3].substring(0, 3);
 
 			if(awardingBody.equals("NJB"))
-				r.qualificationAwardingBody = AwardingBody.NJB;
+				r.setQualificationAwardingBody(AwardingBody.NJB);
 			else if(awardingBody.equals("IJB"))
-				r.qualificationAwardingBody = AwardingBody.IJB;
+				r.setQualificationAwardingBody(AwardingBody.IJB);
 			
-			r.allocatedMatches = Integer.parseInt(fields[4]);
+			r.setAllocatedMatches(Integer.parseInt(fields[4]));
 
 			String home = fields[5];
 			if(home.equals("North"))
-				r.home = Area.NORTH;
+				r.setHome(Area.NORTH);
 			else if(home.equals("Central"))
-				r.home = Area.CENTRAL;
+				r.setHome(Area.CENTRAL);
 			else if(home.equals("South"))
-				r.home = Area.SOUTH;
+				r.setHome(Area.SOUTH);
 			
-			r.localities = fields[6];
+			r.setLocalities(fields[6]);
 			
 			referees.add(r);
 		}
