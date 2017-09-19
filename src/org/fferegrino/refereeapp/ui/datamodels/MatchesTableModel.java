@@ -7,23 +7,22 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 import org.fferegrino.refereeapp.entities.*;
 
-public class RefereesTableModel extends AbstractTableModel {
+public class MatchesTableModel extends AbstractTableModel {
 
-	ArrayList<Referee> referees;
-	String[] columnNames = {"ID",
-            "Name",
-            "Qualification",
-            "Home locality",
-            "Available",
-            "Matches"};
+	ArrayList<Match> matches;
+	String[] columnNames = {"Week",
+            "Level",
+            "Area",
+            "Referee 1",
+            "Referee 2"};
 	
-	public RefereesTableModel(ArrayList<Referee> referees) {
-		this.referees = referees;
+	public MatchesTableModel(ArrayList<Match> arrayList) {
+		this.matches = arrayList;
 	}
-	
+
 	@Override
 	public int getRowCount() {
-		return referees.size();
+		return matches.size();
 	}
 
 	@Override
@@ -49,25 +48,24 @@ public class RefereesTableModel extends AbstractTableModel {
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		Referee r = referees.get(rowIndex);
+		Match m = matches.get(rowIndex);
 		
 		switch(columnIndex)
 		{
 		case 0: // ID
-			return r.getId();
+			return String.valueOf(m.week);
 		case 1:
-			return r.getFirstName() + " " + r.getLastName();
+			return m.qualification;
 		case 2:
-			return r.getQualification();
+			return m.area.name();
 		case 3: 
-			return r.getHome().name();
+			return m.referee1.getFirstName() + " " + m.referee1.getLastName();
 		case 4:
-			return r.getLocalities();
-		case 5:
-			return String.valueOf(r.getAllocatedMatches());
+			return m.referee2.getFirstName() + " " + m.referee2.getLastName();
 			default:
 				return ":)";
 		}
 	}
+
 
 }
