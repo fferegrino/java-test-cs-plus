@@ -86,8 +86,8 @@ public class RefereeApp implements ActionListener {
 	
 	private JComboBox comboQualification;
 	private JComboBox comboHome;
-	private JComboBox comboArea;
-	private JComboBox comboLevel;
+	private JComboBox comboAreaAddMatch;
+	private JComboBox comboLevelAddMatch;
 	private JCheckBox chckbxNorth;
 	private JCheckBox chckbxCenter;
 	private JCheckBox chckbxSouth;
@@ -409,13 +409,14 @@ public class RefereeApp implements ActionListener {
 		gbc_lblArea.gridy = 1;
 		matchesDetailsPanel.add(lblArea, gbc_lblArea);
 		
-		comboArea = new JComboBox(Area.values());
+		comboAreaAddMatch = new JComboBox(Area.values());
+		comboAreaAddMatch.addActionListener(this);
 		GridBagConstraints gbc_comboArea = new GridBagConstraints();
 		gbc_comboArea.insets = new Insets(0, 0, 5, 0);
 		gbc_comboArea.fill = GridBagConstraints.HORIZONTAL;
 		gbc_comboArea.gridx = 1;
 		gbc_comboArea.gridy = 1;
-		matchesDetailsPanel.add(comboArea, gbc_comboArea);
+		matchesDetailsPanel.add(comboAreaAddMatch, gbc_comboArea);
 		
 		JLabel lblLevel = new JLabel("Level:");
 		GridBagConstraints gbc_lblLevel = new GridBagConstraints();
@@ -425,14 +426,14 @@ public class RefereeApp implements ActionListener {
 		gbc_lblLevel.gridy = 2;
 		matchesDetailsPanel.add(lblLevel, gbc_lblLevel);
 		
-		String[] levels = {"Junior", "Senior"};
-		comboLevel = new JComboBox(levels);
+		comboLevelAddMatch = new JComboBox(Match.LEVELS);
+		comboLevelAddMatch.addActionListener(this);
 		GridBagConstraints gbc_comboLevel = new GridBagConstraints();
 		gbc_comboLevel.insets = new Insets(0, 0, 5, 0);
 		gbc_comboLevel.fill = GridBagConstraints.HORIZONTAL;
 		gbc_comboLevel.gridx = 1;
 		gbc_comboLevel.gridy = 2;
-		matchesDetailsPanel.add(comboLevel, gbc_comboLevel);
+		matchesDetailsPanel.add(comboLevelAddMatch, gbc_comboLevel);
 		
 		btnCreateMatch = new JButton("Create match");
 		btnCreateMatch.addActionListener(this);
@@ -511,18 +512,50 @@ public class RefereeApp implements ActionListener {
 		}
 		else if(e.getSource() == btnCreateMatch) 
 		{
+			String error = "";
 			Match m = new Match();
-			m.area = (Area)comboArea.getSelectedItem();
-			m.level =(String)comboLevel.getSelectedItem();
-			m.week = Integer.parseInt(textWeek.getText());
+			m.area = (Area)comboAreaAddMatch.getSelectedItem();
+			m.level =(String)comboLevelAddMatch.getSelectedItem();
+
+			try {
+				m.week = Integer.parseInt(textWeek.getText());
+			}
+			catch(Exception ex)
+			{
+				error += "You must set a valid week\n";
+			}
+			
 			
 			int[] selectedReferees = refereeList.getSelectedIndices();
 			if(selectedReferees.length == 2)
 			{
-				m.referee1 = referees.get(selectedReferees[0]);
-				m.referee2 = referees.get(selectedReferees[1]);	
+				m.referee1 = suitableRefereesListModel.getSuitableReferees()[selectedReferees[0]];
+				m.referee2 = suitableRefereesListModel.getSuitableReferees()[selectedReferees[1]];	
+			}
+			else 
+			{
+				error += "You must select 2 referees\n";
+			}
+			
+			if(error.equals("")) {
 				matches.add(m);
 				matchesTableModel.fireTableRowsInserted(0, matches.size());
+			}
+			else {
+				JOptionPane.showMessageDialog(frame, error);
+			}
+		}
+		else if(e.getSource() == comboAreaAddMatch || e.getSource() == comboLevelAddMatch) 
+		{
+			suitableRefereesListModel.setConditions((String)comboLevelAddMatch.getSelectedItem(), 
+					(Area)comboAreaAddMatch.getSelectedItem());
+			
+			if(suitableRefereesListModel.getSize() >= 2) {
+				int [] indices = {0,1};
+				refereeList.setSelectedIndices(indices);
+			}
+			else {
+				JOptionPane.showMessageDialog(frame, "No suitable referees matched the selected criteria");
 			}
 		}
 	}

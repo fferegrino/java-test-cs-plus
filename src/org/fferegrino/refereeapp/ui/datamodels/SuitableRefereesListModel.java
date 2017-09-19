@@ -1,6 +1,8 @@
 package org.fferegrino.refereeapp.ui.datamodels;
 
 import java.util.ArrayList;
+import java.util.stream.Stream;
+import java.util.function.Supplier;
 
 import javax.swing.AbstractListModel;
 
@@ -9,20 +11,64 @@ import org.fferegrino.refereeapp.entities.*;
 public class SuitableRefereesListModel extends AbstractListModel {
 
 	ArrayList<Referee> referees;
+	private Referee[] suitableReferees;
 	
 	public SuitableRefereesListModel(ArrayList<Referee> referees) {
 			this.referees = referees;
+			this.suitableReferees = new Referee[0];
+	}
+	
+	public void setConditions(String gameLevel, Area area)
+	{
+		boolean isJuniorMatch = gameLevel.equals(Match.LEVEL_JUNIOR);
+		Referee[] refs = referees
+			.stream()
+			.filter(referee -> (referee.getQualificationLevel() == 1) == isJuniorMatch)
+			.filter(referee -> referee.willingToTravelTo(area))
+			.sorted((r1, r2) -> r1.getAllocatedMatches() < r2.getAllocatedMatches() ? -1 : 1)
+			.toArray(size -> new Referee[size]);
+		 
+		Stream<Referee> refsFromHome;
+		Stream<Referee> refsFromAdjacent = null;
+		Stream<Referee> refsOther = Stream.empty();
+		
+		refsFromHome = Stream.of(refs).filter(r -> r.getHome() == area);
+		
+		if(area == Area.CENTRAL)
+		{
+			refsFromAdjacent = Stream.of(refs).filter(r -> r.getHome() != area);
+		}
+		else if(area == Area.SOUTH)
+		{
+			refsFromAdjacent = Stream.of(refs).filter(r -> r.getHome() == area.CENTRAL);
+			refsOther = Stream.of(refs).filter(r -> r.getHome() == area.NORTH);
+		}
+		else if(area == Area.NORTH)
+		{
+			refsFromAdjacent = Stream.of(refs).filter(r -> r.getHome() == area.CENTRAL);
+			refsOther = Stream.of(refs).filter(r -> r.getHome() == area.SOUTH);
+		}
+		
+		this.suitableReferees = Stream.concat(Stream.concat(refsFromHome,refsFromAdjacent), refsOther)
+				.toArray(size -> new Referee[size]);
+		fireContentsChanged(this, 0, getSuitableReferees().length);
 	}
 	
 	@Override
 	public int getSize() {
 		// TODO Auto-generated method stub
-		return referees.size();
+		return getSuitableReferees().length;
 	}
 
 	@Override
 	public Object getElementAt(int index) {
-		return referees.get(index).getFirstName();
+		return getSuitableReferees()[index].getFirstName() + " "+ 
+				getSuitableReferees()[index].getLastName() + " " + 
+				getSuitableReferees()[index].getHome().name() + " " + 
+				String.valueOf(getSuitableReferees()[index].getAllocatedMatches());
 	}
 
+	public Referee[] getSuitableReferees() {
+		return suitableReferees;
+	}
 }
