@@ -492,10 +492,6 @@ public class RefereeApp implements ActionListener {
 		
 	}
 
-	protected JTable getRefereesTable() {
-		return refereesTable;
-	}
-
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource() == btnSearch) // Búsqueda
