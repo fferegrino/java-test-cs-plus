@@ -571,6 +571,10 @@ public class RefereeApp implements ActionListener {
 			{
 				m.referee1 = suitableRefereesListModel.getSuitableReferees()[selectedReferees[0]];
 				m.referee2 = suitableRefereesListModel.getSuitableReferees()[selectedReferees[1]];	
+
+				m.referee1.setAllocatedMatches(m.referee1.getAllocatedMatches() +1);
+				m.referee2.setAllocatedMatches(m.referee2.getAllocatedMatches() +1);
+				refereesTableModel.fireTableDataChanged();
 			}
 			else 
 			{
