@@ -18,19 +18,19 @@ public class RefereeReader {
 			r.qualificationLevel = fields[3].charAt(3) - '0';
 			String awardingBody = fields[3].substring(0, 3);
 
-			if(awardingBody == "NJB")
+			if(awardingBody.equals("NJB"))
 				r.qualificationAwardingBody = AwardingBody.NJB;
-			else if(awardingBody == "IJB")
+			else if(awardingBody.equals("IJB"))
 				r.qualificationAwardingBody = AwardingBody.IJB;
 			
 			r.allocatedMatches = Integer.parseInt(fields[4]);
 
 			String home = fields[5];
-			if(home == "North")
+			if(home.equals("North"))
 				r.home = Area.NORTH;
-			else if(home == "Central")
+			else if(home.equals("Central"))
 				r.home = Area.CENTRAL;
-			else if(home == "South")
+			else if(home.equals("South"))
 				r.home = Area.SOUTH;
 			
 			r.localities = fields[6];
