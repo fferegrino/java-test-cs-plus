@@ -108,6 +108,7 @@ public class RefereeApp implements ActionListener {
 	private JTextField textWeek;
 
 	JMenuItem mntmExit;
+	private JMenuItem mntmViewChart;
 
 	/**
 	 * Create the application.
@@ -144,6 +145,10 @@ public class RefereeApp implements ActionListener {
 		mntmExit = new JMenuItem("Exit");
 		menuBar.add(mntmExit);
 		mntmExit.addActionListener(this);
+		
+		mntmViewChart = new JMenuItem("View chart");
+		menuBar.add(mntmViewChart);
+		mntmViewChart.addActionListener(this);
 		
 		setRefereeCheckboxes();
 	}
@@ -757,6 +762,10 @@ public class RefereeApp implements ActionListener {
 			saveReferees();
 			saveMatches();
 			System.exit(0);
+		} else if (e.getSource() == mntmViewChart) {
+
+			ChartPanel frame = new ChartPanel(referees);
+			frame.setVisible(true);
 		}
 	}
 
