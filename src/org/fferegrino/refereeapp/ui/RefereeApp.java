@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.stream.Stream;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -93,6 +94,7 @@ public class RefereeApp implements ActionListener {
 	JButton btnCreateMatch;
 	JButton btnClear;
 	JButton btnSave;
+	JButton btnNew;
 	JButton btnDelete;
 
 	private JComboBox comboQualification;
@@ -142,6 +144,8 @@ public class RefereeApp implements ActionListener {
 		mntmExit = new JMenuItem("Exit");
 		menuBar.add(mntmExit);
 		mntmExit.addActionListener(this);
+		
+		setRefereeCheckboxes();
 	}
 
 	private void saveReferees() {
@@ -418,7 +422,8 @@ public class RefereeApp implements ActionListener {
 		gbc_btnDelete.gridy = 10;
 		refereeDetails.add(btnDelete, gbc_btnDelete);
 
-		JButton btnNew = new JButton("New");
+		btnNew = new JButton("New");
+		btnNew.addActionListener(this);
 		GridBagConstraints gbc_btnNew = new GridBagConstraints();
 		gbc_btnNew.fill = GridBagConstraints.HORIZONTAL;
 		gbc_btnNew.gridwidth = 2;
@@ -618,7 +623,7 @@ public class RefereeApp implements ActionListener {
 				else if (awardingBody.equals("IJB"))
 					ref.setQualificationAwardingBody(AwardingBody.IJB);
 				ref.setQualificationLevel(qualification.charAt(3) - '0');
-				
+
 				ref.setLocalities(north + south + center);
 				ref.setHome(home);
 				refereesTableModel.fireTableDataChanged();
@@ -680,32 +685,97 @@ public class RefereeApp implements ActionListener {
 			} else {
 				JOptionPane.showMessageDialog(frame, "No suitable referees matched the selected criteria");
 			}
+		} else if (e.getSource() == btnNew) {
+
+			String error = "";
+			Referee newref = new Referee();
+
+			String firstName = textFirstName.getText();
+			String lastName = textLastName.getText();
+			String allocatedMatches = textMatches.getText();
+			String qualification = (String) comboQualification.getSelectedItem();
+			Area home = (Area) comboHomeReferee.getSelectedItem();
+			String north = chckbxNorth.isSelected() ? "Y" : "N";
+			String center = chckbxCenter.isSelected() ? "Y" : "N";
+			String south = chckbxSouth.isSelected() ? "Y" : "N";
+			String awardingBody = qualification.substring(0, 3);
+
+			if (firstName.equals("") || lastName.equals("")) {
+				error += "A referee must have a full name\n";
+			} else {
+				newref.setFirstName(firstName);
+				newref.setLastName(lastName);
+			}
+
+			if (allocatedMatches.equals(""))
+				allocatedMatches = "0";
+
+			try {
+
+				newref.setAllocatedMatches(Integer.parseInt(allocatedMatches));
+				if (newref.getAllocatedMatches() < 0) {
+					error += "Please provide positive number for the allocated matches\n";
+				}
+			} catch (Exception ee) {
+				error += "Please provide a number for the allocated matches\n";
+			}
+
+			newref.setQualificationLevel(qualification.charAt(3) - '0');
+
+			if (awardingBody.equals("NJB"))
+				newref.setQualificationAwardingBody(AwardingBody.NJB);
+			else if (awardingBody.equals("IJB"))
+				newref.setQualificationAwardingBody(AwardingBody.IJB);
+
+			newref.setLocalities(north + south + center);
+			newref.setHome(home);
+
+			if (referees.size() >= 12) {
+				error += "Cannot add a new referee. The limit of 12 has been reached.\n";
+			}
+
+			if (error.equals("")) {
+				String myNewRefId = newref.getId().substring(0, 2);
+				int newId = referees.stream()
+						.filter(r -> r.getId().startsWith(myNewRefId))
+						.map(r -> Integer.parseInt(r.getId().substring(2)))
+						.max((i1, i2) -> i1 - i2).get() + 1;
+				newref.setSequenceNumber(newId);
+				referees.add(newref);
+				refereesTableModel.fireTableRowsInserted(0, referees.size());
+			} else {
+				JOptionPane.showMessageDialog(frame, error);
+			}
 		} else if (e.getSource() == mntmExit) {
 			saveReferees();
 			saveMatches();
 			System.exit(0);
 		} else if (e.getSource() == comboHomeReferee) {
 
-			Area selected = (Area) comboHomeReferee.getSelectedItem();
-			 
-			chckbxNorth.setEnabled(true);
-			chckbxCenter.setEnabled(true);
-			chckbxSouth.setEnabled(true);
-
-			if (selected == Area.NORTH) {
-				chckbxNorth.setEnabled(false);
-				chckbxNorth.setSelected(true);
-			}else  if (selected == Area.CENTRAL) {
-				chckbxCenter.setEnabled(false);
-				chckbxCenter.setSelected(true);
-			} else if (selected == Area.SOUTH) { 
-				chckbxSouth.setEnabled(false);
-				chckbxSouth.setSelected(true);
-			}
+			setRefereeCheckboxes();
 		} else if (e.getSource() == mntmExit) {
 			saveReferees();
 			saveMatches();
 			System.exit(0);
+		}
+	}
+
+	private void setRefereeCheckboxes() {
+		Area selected = (Area) comboHomeReferee.getSelectedItem();
+
+		chckbxNorth.setEnabled(true);
+		chckbxCenter.setEnabled(true);
+		chckbxSouth.setEnabled(true);
+
+		if (selected == Area.NORTH) {
+			chckbxNorth.setEnabled(false);
+			chckbxNorth.setSelected(true);
+		} else if (selected == Area.CENTRAL) {
+			chckbxCenter.setEnabled(false);
+			chckbxCenter.setSelected(true);
+		} else if (selected == Area.SOUTH) {
+			chckbxSouth.setEnabled(false);
+			chckbxSouth.setSelected(true);
 		}
 	}
 
