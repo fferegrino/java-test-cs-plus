@@ -19,7 +19,7 @@ public class MatchesWriter {
 		    writer.println(
 		    		String.valueOf(m.week) + " " +
     				m.level + " " + 
-    				m.area.name() + " " +
+    				m.area.getRealName() + " " +
     				m.referee1.getFirstName() + " " + m.referee1.getLastName() + " " +
     				m.referee2.getFirstName() + " " + m.referee2.getLastName() + " " );
 		}

@@ -16,7 +16,7 @@ public class RefereeWriter {
 		    		r.getLastName() + " " +
 		    		r.getQualification() + " " +
 		    		String.valueOf(r.getAllocatedMatches()) + " " +
-		    		r.getHome().name() + " " +
+		    		r.getHome().getRealName() + " " +
 		    		r.getLocalities());
 		}
 	    writer.close();
