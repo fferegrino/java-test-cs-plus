@@ -84,7 +84,7 @@ public class RefereeApp implements ActionListener {
 	RefereesTableModel refereesTableModel;
 	SuitableRefereesListModel suitableRefereesListModel;
 	private JTable refereesTable;
-	private JList refereeList;
+	private JList<Referee> refereeList;
 
 	private JTextPane firstNameSearchText;
 	private JTextPane lastNameSearchText;
@@ -599,7 +599,7 @@ public class RefereeApp implements ActionListener {
 				textLastName.setEnabled(false);
 				textMatches.setEnabled(false);
 			} else {
-				JOptionPane.showMessageDialog(frame, "Referee not found");
+				JOptionPane.showMessageDialog(frame, "Referee not found", "Not found",JOptionPane.WARNING_MESSAGE);
 			}
 		} else if (e.getSource() == btnClear) {
 			lblIdValue.setText("---");
@@ -682,7 +682,7 @@ public class RefereeApp implements ActionListener {
 				matches.add(m);
 				matchesTableModel.fireTableRowsInserted(0, matches.size());
 			} else {
-				JOptionPane.showMessageDialog(frame, error);
+				JOptionPane.showMessageDialog(frame, error, "Error",JOptionPane.ERROR_MESSAGE);
 			}
 
 		} else if (e.getSource() == btnDelete) {
@@ -708,7 +708,8 @@ public class RefereeApp implements ActionListener {
 				int[] indices = { 0, 1 };
 				refereeList.setSelectedIndices(indices);
 			} else {
-				JOptionPane.showMessageDialog(frame, "No suitable referees matched the selected criteria");
+
+				JOptionPane.showMessageDialog(frame, "No suitable referees matched the selected criteria", "Notification",JOptionPane.INFORMATION_MESSAGE);
 			}
 		} else if (e.getSource() == btnNew) {
 
@@ -776,7 +777,7 @@ public class RefereeApp implements ActionListener {
 			    });
 				refereesTableModel.fireTableRowsInserted(0, referees.size());
 			} else {
-				JOptionPane.showMessageDialog(frame, error);
+				JOptionPane.showMessageDialog(frame, error, "Error", JOptionPane.ERROR_MESSAGE);
 			}
 		} else if (e.getSource() == mntmExit) {
 			saveReferees();
