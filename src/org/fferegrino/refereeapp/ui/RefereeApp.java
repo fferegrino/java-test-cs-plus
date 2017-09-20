@@ -36,6 +36,8 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.fferegrino.refereeapp.entities.Area;
 import org.fferegrino.refereeapp.entities.AwardingBody;
@@ -406,7 +408,7 @@ public class RefereeApp implements ActionListener {
 		GridBagConstraints gbc_btnClear = new GridBagConstraints();
 		gbc_btnClear.fill = GridBagConstraints.HORIZONTAL;
 		gbc_btnClear.gridwidth = 2;
-		gbc_btnClear.insets = new Insets(0, 0, 5, 5);
+		gbc_btnClear.insets = new Insets(0, 0, 5, 0);
 		gbc_btnClear.gridx = 0;
 		gbc_btnClear.gridy = 7;
 		refereeDetails.add(btnClear, gbc_btnClear);
@@ -443,6 +445,19 @@ public class RefereeApp implements ActionListener {
 		refereeDetails.add(btnNew, gbc_btnNew);
 
 		refereesTable = new JTable();
+		refereesTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+
+			@Override
+			public void valueChanged(ListSelectionEvent arg0) {
+				int selectedRow = refereesTable.getSelectedRow();
+
+				if (0 <= selectedRow && selectedRow < referees.size()) {
+					Referee selectedReferee = referees.get(selectedRow);
+					firstNameSearchText.setText(selectedReferee.getFirstName());
+					lastNameSearchText.setText(selectedReferee.getLastName());
+				}
+			}
+		});
 
 		JScrollPane refereesScrollPanel = new JScrollPane(refereesTable);
 		refereesPanel.setLeftComponent(refereesScrollPanel);
