@@ -1,7 +1,15 @@
 package org.fferegrino.refereeapp.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.EventQueue;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -10,44 +18,36 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Scanner;
-import java.util.stream.Stream;
 
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.JTextPane;
+import javax.swing.SwingConstants;
 
 import org.fferegrino.refereeapp.entities.Area;
 import org.fferegrino.refereeapp.entities.AwardingBody;
-import org.fferegrino.refereeapp.entities.Referee;
 import org.fferegrino.refereeapp.entities.Match;
+import org.fferegrino.refereeapp.entities.Referee;
 import org.fferegrino.refereeapp.io.MatchesWriter;
 import org.fferegrino.refereeapp.io.RefereeReader;
 import org.fferegrino.refereeapp.io.RefereeWriter;
-import org.fferegrino.refereeapp.ui.datamodels.*;
-
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.GridLayout;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JTextPane;
-import javax.swing.JButton;
-import javax.swing.JTextField;
-import java.awt.Font;
-import javax.swing.JComboBox;
-import javax.swing.SwingConstants;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.JCheckBox;
-import javax.swing.JList;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import java.awt.Color;
+import org.fferegrino.refereeapp.ui.datamodels.MatchesTableModel;
+import org.fferegrino.refereeapp.ui.datamodels.RefereesTableModel;
+import org.fferegrino.refereeapp.ui.datamodels.SuitableRefereesListModel;
+import org.fferegrino.refereeapp.ui.datamodels.SuitableRefereesSelectionModel;
 
 public class RefereeApp implements ActionListener {
 
@@ -153,6 +153,9 @@ public class RefereeApp implements ActionListener {
 		mntmViewChart.addActionListener(this);
 		
 		setRefereeCheckboxes();
+
+		suitableRefereesListModel.setConditions((String) comboLevelAddMatch.getSelectedItem(),
+				(Area) comboAreaAddMatch.getSelectedItem());
 	}
 
 	private void saveReferees() {

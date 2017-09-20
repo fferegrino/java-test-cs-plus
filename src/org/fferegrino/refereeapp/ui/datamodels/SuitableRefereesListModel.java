@@ -2,13 +2,15 @@ package org.fferegrino.refereeapp.ui.datamodels;
 
 import java.util.ArrayList;
 import java.util.stream.Stream;
-import java.util.function.Supplier;
 
 import javax.swing.AbstractListModel;
 
-import org.fferegrino.refereeapp.entities.*;
+import org.fferegrino.refereeapp.entities.Area;
+import org.fferegrino.refereeapp.entities.Match;
+import org.fferegrino.refereeapp.entities.Referee;
 
-public class SuitableRefereesListModel extends AbstractListModel {
+@SuppressWarnings("serial")
+public class SuitableRefereesListModel extends AbstractListModel<Referee> {
 
 	ArrayList<Referee> referees;
 	private Referee[] suitableReferees;
@@ -40,13 +42,13 @@ public class SuitableRefereesListModel extends AbstractListModel {
 		}
 		else if(area == Area.SOUTH)
 		{
-			refsFromAdjacent = Stream.of(refs).filter(r -> r.getHome() == area.CENTRAL);
-			refsOther = Stream.of(refs).filter(r -> r.getHome() == area.NORTH);
+			refsFromAdjacent = Stream.of(refs).filter(r -> r.getHome() == Area.CENTRAL);
+			refsOther = Stream.of(refs).filter(r -> r.getHome() == Area.NORTH);
 		}
 		else if(area == Area.NORTH)
 		{
-			refsFromAdjacent = Stream.of(refs).filter(r -> r.getHome() == area.CENTRAL);
-			refsOther = Stream.of(refs).filter(r -> r.getHome() == area.SOUTH);
+			refsFromAdjacent = Stream.of(refs).filter(r -> r.getHome() == Area.CENTRAL);
+			refsOther = Stream.of(refs).filter(r -> r.getHome() == Area.SOUTH);
 		}
 		
 		this.suitableReferees = Stream.concat(Stream.concat(refsFromHome,refsFromAdjacent), refsOther)
@@ -61,11 +63,14 @@ public class SuitableRefereesListModel extends AbstractListModel {
 	}
 
 	@Override
-	public Object getElementAt(int index) {
-		return getSuitableReferees()[index].getFirstName() + " "+ 
+	public Referee getElementAt(int index) {
+		return getSuitableReferees()[index];
+		/*
+		.getFirstName() + " "+ 
 				getSuitableReferees()[index].getLastName() + " " + 
 				getSuitableReferees()[index].getHome().name() + " " + 
 				String.valueOf(getSuitableReferees()[index].getAllocatedMatches());
+				*/
 	}
 
 	public Referee[] getSuitableReferees() {

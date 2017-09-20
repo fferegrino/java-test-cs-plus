@@ -2,11 +2,11 @@ package org.fferegrino.refereeapp.ui.datamodels;
 
 import java.util.ArrayList;
 
-import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableModel;
-import org.fferegrino.refereeapp.entities.*;
 
+import org.fferegrino.refereeapp.entities.Match;
+
+@SuppressWarnings("serial")
 public class MatchesTableModel extends AbstractTableModel {
 
 	ArrayList<Match> matches;
@@ -57,7 +57,7 @@ public class MatchesTableModel extends AbstractTableModel {
 		case 1:
 			return m.level;
 		case 2:
-			return m.area.name();
+			return m.area.getRealName();
 		case 3: 
 			return m.referee1.getFirstName() + " " + m.referee1.getLastName();
 		case 4:

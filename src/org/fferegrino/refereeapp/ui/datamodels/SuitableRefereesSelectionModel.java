@@ -3,6 +3,7 @@ package org.fferegrino.refereeapp.ui.datamodels;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.JList;
 
+@SuppressWarnings("serial")
 public class SuitableRefereesSelectionModel extends DefaultListSelectionModel
 {
     private JList list;

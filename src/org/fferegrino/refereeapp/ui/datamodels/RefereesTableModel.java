@@ -2,11 +2,11 @@ package org.fferegrino.refereeapp.ui.datamodels;
 
 import java.util.ArrayList;
 
-import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableModel;
-import org.fferegrino.refereeapp.entities.*;
 
+import org.fferegrino.refereeapp.entities.Referee;
+
+@SuppressWarnings("serial")
 public class RefereesTableModel extends AbstractTableModel {
 
 	ArrayList<Referee> referees;
@@ -60,7 +60,7 @@ public class RefereesTableModel extends AbstractTableModel {
 		case 2:
 			return r.getQualification();
 		case 3: 
-			return r.getHome().name();
+			return r.getHome().getRealName();
 		case 4:
 			return r.getLocalities();
 		case 5:

@@ -21,7 +21,7 @@ public class Referee {
 
 	@Override
 	public String toString() {
-		return "Name: " + getFirstName();
+		return getFirstName() + " " + getLastName() + " (" + getHome().getRealName() + "). Matches: " + getAllocatedMatches();
 	}
 
 	public String getId() {

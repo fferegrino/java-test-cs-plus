@@ -1,20 +1,16 @@
 package org.fferegrino.refereeapp.ui;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.EventQueue;
 import java.awt.Graphics;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
 
 import org.fferegrino.refereeapp.entities.Referee;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.stream.Stream;
-
+@SuppressWarnings("serial")
 public class ChartPanel extends JFrame {
 
 	private JPanel contentPane;
@@ -59,8 +55,6 @@ public class ChartPanel extends JFrame {
 		public void paintComponent(Graphics g) {
 			int chartWidth = PANEL_WIDTH - PANEL_PADDING * 2;
 			int chartHeight = PANEL_HEIGHT - PANEL_PADDING * 2;
-			int lowerBorder = PANEL_HEIGHT - PANEL_PADDING;
-			int rightmostBorder = PANEL_WIDTH - PANEL_PADDING;
 			
 			int[] allocations = new int[refs.size()];
 			for (int i = 0; i < refs.size(); i++)
@@ -84,7 +78,6 @@ public class ChartPanel extends JFrame {
 			
 			for (Referee re : refs) {
 				int i =  re.getAllocatedMatches();
-				int barX = currentX;
 				int barY = chartHeight - (int)(unitSize * i);
 				g.setColor(new Color((i*3 * i) % 255, (i*2* i *4) % 255,(i*i) % 225));
 				g.fillRect(currentX, barY, (int)barWidth, (int)(unitSize * i));
