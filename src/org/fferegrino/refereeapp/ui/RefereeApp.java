@@ -7,6 +7,8 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Scanner;
 import java.util.stream.Stream;
 
@@ -744,9 +746,16 @@ public class RefereeApp implements ActionListener {
 				int newId = referees.stream()
 						.filter(r -> r.getId().startsWith(myNewRefId))
 						.map(r -> Integer.parseInt(r.getId().substring(2)))
-						.max((i1, i2) -> i1 - i2).get() + 1;
+						.max((i1, i2) -> i1 - i2).orElse(0) + 1;
 				newref.setSequenceNumber(newId);
 				referees.add(newref);
+				Collections.sort(referees, new Comparator<Referee>() {
+			        @Override
+			        public int compare(Referee referee1, Referee referee2)
+			        {
+			            return  referee1.getId().compareTo(referee2.getId());
+			        }
+			    });
 				refereesTableModel.fireTableRowsInserted(0, referees.size());
 			} else {
 				JOptionPane.showMessageDialog(frame, error);
